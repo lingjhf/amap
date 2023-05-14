@@ -6,4 +6,5 @@ import Unocss from 'unocss/vite'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue(), Unocss(), ElementPlus({})],
+  base: '/amap'
 })
