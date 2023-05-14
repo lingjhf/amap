@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import AMapLoader from "@amap/amap-jsapi-loader";
-import type { AMapType, Map, LngLatLike, PolygonOptions } from "./type";
+import type { AMapType, Map, LngLatLike, PolygonCallback } from "./type";
 import { watch } from "vue";
 
 const props = withDefaults(
@@ -12,7 +12,7 @@ const props = withDefaults(
     mapKey: string;
     center?: LngLatLike;
     zoom?: number;
-    polygons?: PolygonOptions[];
+    polygons?: PolygonCallback[];
   }>(),
   { zoom: 8, polygons: () => [] }
 );
@@ -56,7 +56,8 @@ watch(
   () => props.polygons,
   (value) => {
     setPolygons(value);
-  }
+  },
+  { deep: true }
 );
 
 async function initMap(key: string) {
@@ -77,9 +78,10 @@ function setZoom(value: number) {
   amap?.setZoom(value);
 }
 
-function setPolygons(value: PolygonOptions[]) {
-  for (const opt of value) {
-    const polygon = new AMap.Polygon(opt);
+function setPolygons(funcs: PolygonCallback[]) {
+  for (const func of funcs) {
+    const polygon = new AMap.Polygon();
+    func(polygon);
     amap?.add(polygon);
   }
 }
