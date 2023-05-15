@@ -10,8 +10,14 @@
         @init="initMap"
       />
     </div>
-    <div v-if="isInitMap" class="absolute left-2 top-2">
-      <district-cascader @change="districtCascaderChange"></district-cascader>
+    <div v-if="isInitMap" class="absolute left-2 top-2 right-2">
+      <el-button class="mb-2" @click="openRegionCascader">{{
+        currentRegion
+      }}</el-button>
+      <district-cascader
+        v-show="visibleRegionCascader"
+        @change="districtCascaderChange"
+      />
     </div>
   </div>
 </template>
@@ -22,22 +28,37 @@ import type { PolygonCallback, Polygon, LngLatLike } from "./components/type";
 import AMap from "./components/a-map.vue";
 import DistrictCascader from "./components/district-cascader.vue";
 import { getDistrict } from "./components/api";
+import { CascaderValue, ElButton } from "element-plus";
 
+const visibleRegionCascader = ref(false);
+const currentRegion = ref("请选择区域");
 const key = ref("84586d5935ca9f959b10ae84e7ace968");
 const isInitMap = ref(false);
 const center = ref<[number, number]>([116.407387, 39.904179]);
 const zoom = ref(10);
 const polygons = ref<PolygonCallback[]>([]);
 
+function openRegionCascader() {
+  visibleRegionCascader.value = !visibleRegionCascader.value;
+}
+
 async function initMap() {
   isInitMap.value = true;
 }
 
-async function districtCascaderChange(value: any) {
-  const c = value.center.split(",");
+async function districtCascaderChange({
+  value,
+  region,
+}: {
+  value: CascaderValue;
+  region: any;
+}) {
+  currentRegion.value = (value as string[]).join(" / ");
+  visibleRegionCascader.value = false;
+  const c = region.center.split(",");
   center.value = [Number(c[0]), Number(c[1])];
   const districts = await getDistrict({
-    keywords: value.adcode,
+    keywords: region.adcode,
     subdistrict: 0,
     extensions: "all",
   });

@@ -1,13 +1,13 @@
 <template>
-  <ElCascader
-    :props="cascaderProps"
-    @change="subdistrictChange"
-    placeholder="请选择区域"
-  />
+  <div class="overflow-x-auto flex">
+    <div class="bg-white">
+      <el-cascader-panel :props="cascaderProps" @change="subdistrictChange" />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { CascaderValue, ElCascader } from "element-plus";
+import { CascaderValue, ElCascaderPanel } from "element-plus";
 import type { CascaderOption, CascaderProps } from "element-plus";
 import { getDistrict } from "./api";
 
@@ -47,6 +47,6 @@ async function getSubDistrict(keywords: string) {
 }
 
 function subdistrictChange(value: CascaderValue) {
-  emits("change", districtMap[(value as string[]).join("")]);
+  emits("change", { value, region: districtMap[(value as string[]).join("")] });
 }
 </script>
