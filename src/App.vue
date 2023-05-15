@@ -29,6 +29,7 @@ import AMap from "./components/a-map.vue";
 import DistrictCascader from "./components/district-cascader.vue";
 import { getDistrict } from "./components/api";
 import { CascaderValue, ElButton } from "element-plus";
+import { polylineStringToArray } from "./components/utils";
 
 const visibleRegionCascader = ref(false);
 const currentRegion = ref("请选择区域");
@@ -63,20 +64,12 @@ async function districtCascaderChange({
     extensions: "all",
   });
   const district = districts[0];
-  const lines = district.polyline.split("|").map((line: string) => {
-    return (polygon: Polygon) => {
-      const p = line.split(";").map((item: string) => {
-        const i = item.split(",");
-        return [Number(i[0]), Number(i[1])];
-      });
-      polygon.setOptions({
-        path: p as LngLatLike[],
-        strokeColor: "#dc2626",
-        fillColor: "#3b82f6",
-      });
-    };
-  });
-  polygons.value = lines;
+  polygons.value = polylineStringToArray(district.polyline, (polygon) =>
+    polygon.setOptions({
+      strokeColor: "#dc2626",
+      fillColor: "#3b82f6",
+    })
+  );
 }
 </script>
 
