@@ -1,5 +1,9 @@
 <template>
-  <ElCascader :props="cascaderProps" @change="subdistrictChange" />
+  <ElCascader
+    :props="cascaderProps"
+    @change="subdistrictChange"
+    placeholder="请选择区域"
+  />
 </template>
 
 <script setup lang="ts">

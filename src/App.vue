@@ -1,6 +1,6 @@
 <template>
   <div class="h-screen w-screen flex">
-    <div class="w-[50%] h-full">
+    <div class="w-[100%] h-full">
       <a-map
         class="w-full h-full"
         :map-key="key"
@@ -10,10 +10,7 @@
         @init="initMap"
       />
     </div>
-    <div
-      v-if="isInitMap"
-      class="w-[50%] h-full flex items-center bg-gray-600 justify-center"
-    >
+    <div v-if="isInitMap" class="absolute left-2 top-2">
       <district-cascader @change="districtCascaderChange"></district-cascader>
     </div>
   </div>
