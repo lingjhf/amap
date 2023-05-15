@@ -4,7 +4,13 @@
 
 <script setup lang="ts">
 import AMapLoader from "@amap/amap-jsapi-loader";
-import type { AMapType, Map, LngLatLike, PolygonCallback } from "./type";
+import type {
+  AMapType,
+  Map,
+  LngLatLike,
+  PolygonCallback,
+  PolylineCallback,
+} from "./type";
 import { watch } from "vue";
 
 const props = withDefaults(
@@ -13,10 +19,11 @@ const props = withDefaults(
     center?: LngLatLike;
     zoom?: number;
     polygons?: PolygonCallback[];
+    polylines?: PolylineCallback[];
   }>(),
-  { zoom: 8, polygons: () => [] }
+  { zoom: 8, polygons: () => [], polylines: () => [] }
 );
-const emits = defineEmits<{ (e: "init", amap: any): void }>();
+const emits = defineEmits<{ (e: "init", amap: Map): void }>();
 
 let AMap: AMapType;
 let amap: Map | undefined;
@@ -31,6 +38,7 @@ watch(
     }
     setZoom(props.zoom);
     setPolygons(props.polygons);
+    setPolylines(props.polylines);
     emits("init", amap);
   },
   { immediate: true }
@@ -60,6 +68,16 @@ watch(
   { deep: true }
 );
 
+watch(
+  () => props.polylines,
+  (value) => {
+    setPolylines(value);
+  },
+  {
+    deep: true,
+  }
+);
+
 async function initMap(key: string) {
   const AMap = await AMapLoader.load({
     key: key,
@@ -83,6 +101,14 @@ function setPolygons(funcs: PolygonCallback[]) {
     const polygon = new AMap.Polygon();
     func(polygon);
     amap?.add(polygon);
+  }
+}
+
+function setPolylines(funcs: PolylineCallback[]) {
+  for (const func of funcs) {
+    const polyline = new AMap.Polyline();
+    func(polyline);
+    amap?.add(polyline);
   }
 }
 </script>
